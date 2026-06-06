@@ -43,7 +43,7 @@ const Login: React.FC = () => {
         padding: 24,
       }}
     >
-  <Card
+      <Card
         style={{ width: '100%', maxWidth: 420, borderRadius: 16, boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}
         bodyStyle={{ padding: '40px 40px' }}
       >
@@ -116,9 +116,22 @@ const Login: React.FC = () => {
           Tạo tài khoản mới
         </Button>
 
-  </Card>
-</div>
-);
+        <div
+          style={{
+            marginTop: 20,
+            padding: '10px 14px',
+            background: '#fffbe6',
+            border: '1px solid #ffe58f',
+            borderRadius: 8,
+          }}
+        >
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            <strong>Demo:</strong> test@gmail.com / 123456
+          </Text>
+        </div>
+      </Card>
+    </div>
+  );
 };
 
 export default Login;
