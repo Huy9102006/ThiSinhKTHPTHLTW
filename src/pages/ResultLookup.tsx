@@ -66,7 +66,6 @@ const ResultLookup: React.FC = () => {
         Nhập số CCCD/CMND để tra cứu kết quả xét tuyển
       </Paragraph>
 
-      {/* Search Form */}
       <Card style={{ borderRadius: 12, marginBottom: 24, maxWidth: 560, margin: '0 auto 24px' }}>
         <Form form={form} onFinish={handleSearch} layout="vertical" size="large">
           <Form.Item
@@ -101,7 +100,6 @@ const ResultLookup: React.FC = () => {
         </Form>
       </Card>
 
-      {/* Results */}
       {searched && (
         <div>
           {results.length === 0 ? (
@@ -164,7 +162,6 @@ const ResultLookup: React.FC = () => {
 
                     <Divider style={{ margin: '12px 0' }} />
 
-                    {/* Score details */}
                     <Row>
                       {app.scores.map((s) => (
                         <Col xs={8} key={s.subject} style={{ textAlign: 'center' }}>
@@ -176,7 +173,6 @@ const ResultLookup: React.FC = () => {
 
                     <Divider style={{ margin: '12px 0' }} />
 
-                    {/* Status Message */}
                     <Alert
                       message={cfg.label}
                       description={cfg.desc}
