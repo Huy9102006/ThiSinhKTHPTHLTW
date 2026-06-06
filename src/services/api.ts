@@ -15,11 +15,10 @@ export interface Major {
 
 export interface SubjectGroup {
   id: string;
-  code: string; // e.g. A00, B00, D01
+  code: string;
   subjects: string[];
 }
 
-// Mock database
 const MOCK_UNIVERSITIES: University[] = [
   {
     id: 'u1',
@@ -127,7 +126,6 @@ const MOCK_USERS: { email: string; password: string; user: any }[] = [
   },
 ];
 
-// Simulated async API calls
 export const api = {
   async getUniversities(): Promise<University[]> {
     return new Promise((res) => setTimeout(() => res(MOCK_UNIVERSITIES), 300));

@@ -47,7 +47,6 @@ const Login: React.FC = () => {
         style={{ width: '100%', maxWidth: 420, borderRadius: 16, boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}
         bodyStyle={{ padding: '40px 40px' }}
       >
-        {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div
             style={{
@@ -117,7 +116,6 @@ const Login: React.FC = () => {
           Tạo tài khoản mới
         </Button>
 
-        {/* Demo hint */}
         <div
           style={{
             marginTop: 20,

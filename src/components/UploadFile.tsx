@@ -60,7 +60,7 @@ const UploadFile: React.FC<Props> = ({
       message.success(`${file.name} đã được tải lên!`);
     };
     reader.readAsDataURL(file);
-    return false; // Prevent default upload
+    return false;
   };
 
   const handleRemove = (index: number) => {
