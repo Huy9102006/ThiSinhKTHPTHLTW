@@ -39,6 +39,7 @@ const applicationSchema = new mongoose.Schema({
   priorityGroup: String,
   priorityArea: String,
   files: mongoose.Schema.Types.Mixed,
+  applicationNumber: { type: String, unique: true, sparse: true, default: () => `APP-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` },
   status: { type: String, default: 'pending' },
   submittedAt: { type: Date, default: Date.now },
   note: String
