@@ -1,7 +1,8 @@
+import universityData from '../data/universities.json';
+
 export interface University {
   id: string;
   name: string;
-  code: string;
   majors: Major[];
 }
 
@@ -19,97 +20,8 @@ export interface SubjectGroup {
   subjects: string[];
 }
 
-const MOCK_UNIVERSITIES: University[] = [
-  {
-    id: 'u1',
-    name: 'Đại học Bách Khoa Hà Nội',
-    code: 'BKH',
-    majors: [
-      {
-        id: 'm1',
-        name: 'Công nghệ Thông tin',
-        code: 'CNTT',
-        quota: 200,
-        subjectGroups: [
-          { id: 'sg1', code: 'A00', subjects: ['Toán', 'Lý', 'Hóa'] },
-          { id: 'sg2', code: 'A01', subjects: ['Toán', 'Lý', 'Anh'] },
-        ],
-      },
-      {
-        id: 'm2',
-        name: 'Kỹ thuật Điện',
-        code: 'KTD',
-        quota: 150,
-        subjectGroups: [
-          { id: 'sg3', code: 'A00', subjects: ['Toán', 'Lý', 'Hóa'] },
-        ],
-      },
-      {
-        id: 'm3',
-        name: 'Cơ khí',
-        code: 'CK',
-        quota: 100,
-        subjectGroups: [
-          { id: 'sg4', code: 'A00', subjects: ['Toán', 'Lý', 'Hóa'] },
-          { id: 'sg5', code: 'D01', subjects: ['Toán', 'Văn', 'Anh'] },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'u2',
-    name: 'Đại học Kinh tế Quốc dân',
-    code: 'NEU',
-    majors: [
-      {
-        id: 'm4',
-        name: 'Kinh tế',
-        code: 'KT',
-        quota: 300,
-        subjectGroups: [
-          { id: 'sg6', code: 'A00', subjects: ['Toán', 'Lý', 'Hóa'] },
-          { id: 'sg7', code: 'D01', subjects: ['Toán', 'Văn', 'Anh'] },
-        ],
-      },
-      {
-        id: 'm5',
-        name: 'Quản trị Kinh doanh',
-        code: 'QTKD',
-        quota: 250,
-        subjectGroups: [
-          { id: 'sg8', code: 'A00', subjects: ['Toán', 'Lý', 'Hóa'] },
-          { id: 'sg9', code: 'C00', subjects: ['Văn', 'Sử', 'Địa'] },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'u3',
-    name: 'Học viện BCVT (PTIT)',
-    code: 'PTIT',
-    majors: [
-      {
-        id: 'm6',
-        name: 'Công nghệ Thông tin',
-        code: 'CNTT',
-        quota: 180,
-        subjectGroups: [
-          { id: 'sg10', code: 'A00', subjects: ['Toán', 'Lý', 'Hóa'] },
-          { id: 'sg11', code: 'A01', subjects: ['Toán', 'Lý', 'Anh'] },
-        ],
-      },
-      {
-        id: 'm7',
-        name: 'Kỹ thuật Viễn thông',
-        code: 'KTVT',
-        quota: 120,
-        subjectGroups: [
-          { id: 'sg12', code: 'A00', subjects: ['Toán', 'Lý', 'Hóa'] },
-        ],
-      },
-    ],
-  },
-];
+const MOCK_UNIVERSITIES: University[] = universityData as University[];
+
 
 const MOCK_USERS: { email: string; password: string; user: any }[] = [
   {

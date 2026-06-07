@@ -185,7 +185,7 @@ const ApplicationForm: React.FC = () => {
     );
   }
 
-  const uniOptions = universities.map((u) => ({ value: u.id, label: `${u.name} (${u.code})` }));
+  const uniOptions = universities.map((u) => ({ value: u.id, label: `${u.name} ` }));
   const majorOptions = majors.map((m) => ({ value: m.id, label: `${m.name} - Chỉ tiêu: ${m.quota}` }));
   const sgOptions = subjectGroups.map((sg) => ({
     value: sg.id,
