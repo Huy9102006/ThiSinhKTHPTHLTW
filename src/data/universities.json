@@ -52,5 +52,33 @@
         ]
       }
     ]
+  },
+
+
+   {
+    "id": "u3",
+    "name": "Trường Đại học Công nghệ - Đại học Quốc gia Hà Nội",
+    "majors": [
+      {
+        "id": "u3_m1",
+        "name": "Công nghệ thông tin",
+        "code": "7480201",
+        "quota": 500,
+        "subjectGroups": [
+          { "id": "u3_m1_sg1", "code": "A00", "subjects": ["Toán", "Lý", "Hóa"] },
+          { "id": "u3_m1_sg2", "code": "A01", "subjects": ["Toán", "Lý", "Anh"] }
+        ]
+      },
+      {
+        "id": "u3_m2",
+        "name": "Kỹ thuật viễn thông",
+        "code": "7520208",
+        "quota": 300,
+        "subjectGroups": [
+          { "id": "u3_m2_sg1", "code": "A00", "subjects": ["Toán", "Lý", "Hóa"] },
+          { "id": "u3_m2_sg2", "code": "A01", "subjects": ["Toán", "Lý", "Anh"] }
+        ]
+      }
+    ]
   }
 ]
