@@ -116,19 +116,6 @@ const Login: React.FC = () => {
           Tạo tài khoản mới
         </Button>
 
-        <div
-          style={{
-            marginTop: 20,
-            padding: '10px 14px',
-            background: '#fffbe6',
-            border: '1px solid #ffe58f',
-            borderRadius: 8,
-          }}
-        >
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            <strong>Demo:</strong> test@gmail.com / 123456
-          </Text>
-        </div>
       </Card>
     </div>
   );
