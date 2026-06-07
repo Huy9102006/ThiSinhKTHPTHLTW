@@ -15,10 +15,21 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
-const stored = localStorage.getItem('auth');
-const initial: AuthState = stored
-  ? JSON.parse(stored)
-  : { user: null, token: null, isAuthenticated: false };
+// Default user for public access
+const defaultUser: User = {
+  id: 'guest_user',
+  email: 'thi_sinh@example.com',
+  fullName: 'Thí sinh khách',
+  phone: '0987654321',
+  dob: '2005-01-01',
+  idCard: '001205001234',
+};
+
+const initial: AuthState = {
+  user: defaultUser,
+  token: 'guest_token',
+  isAuthenticated: true,
+};
 
 const authSlice = createSlice({
   name: 'auth',
@@ -28,18 +39,13 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isAuthenticated = true;
-      localStorage.setItem('auth', JSON.stringify(state));
     },
     logout(state) {
-      state.user = null;
-      state.token = null;
-      state.isAuthenticated = false;
-      localStorage.removeItem('auth');
+      // Logic for logout if needed, but we probably don't need it now
     },
     updateUser(state, action: PayloadAction<Partial<User>>) {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
-        localStorage.setItem('auth', JSON.stringify(state));
       }
     },
   },

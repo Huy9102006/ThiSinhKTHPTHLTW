@@ -22,21 +22,7 @@ export interface SubjectGroup {
 
 const MOCK_UNIVERSITIES: University[] = universityData as University[];
 
-
-const MOCK_USERS: { email: string; password: string; user: any }[] = [
-  {
-    email: 'test@gmail.com',
-    password: '123456',
-    user: {
-      id: 'user1',
-      email: 'test@gmail.com',
-      fullName: 'Nguyễn Văn A',
-      phone: '0901234567',
-      dob: '2006-01-15',
-      idCard: '001206012345',
-    },
-  },
-];
+const BASE_URL = 'http://localhost:5000/api';
 
 export const api = {
   async getUniversities(): Promise<University[]> {
@@ -50,50 +36,38 @@ export const api = {
     });
   },
 
-  async login(
-    email: string,
-    password: string
-  ): Promise<{ user: any; token: string } | null> {
-    return new Promise((res) => {
-      const found = MOCK_USERS.find(
-        (u) => u.email === email && u.password === password
-      );
-      setTimeout(
-        () => res(found ? { user: found.user, token: 'mock-token-' + found.user.id } : null),
-        400
-      );
+  // Upload file lên MongoDB Atlas qua Backend
+  async uploadFile(file: File): Promise<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await fetch(`${BASE_URL}/upload`, {
+      method: 'POST',
+      body: formData,
     });
+    if (!response.ok) throw new Error('Upload failed');
+    return response.json();
   },
 
-  async register(data: {
-    email: string;
-    password: string;
-    fullName: string;
-    phone: string;
-    dob: string;
-    idCard: string;
-  }): Promise<{ user: any; token: string } | { error: string }> {
-    return new Promise((res) => {
-      const exists = MOCK_USERS.find((u) => u.email === data.email);
-      if (exists) {
-        setTimeout(() => res({ error: 'Email đã được sử dụng!' }), 300);
-        return;
-      }
-      const newUser = {
-        id: 'user_' + Date.now(),
-        email: data.email,
-        fullName: data.fullName,
-        phone: data.phone,
-        dob: data.dob,
-        idCard: data.idCard,
-      };
-      MOCK_USERS.push({ email: data.email, password: data.password, user: newUser });
-      setTimeout(
-        () => res({ user: newUser, token: 'mock-token-' + newUser.id }),
-        400
-      );
+  // Lưu hồ sơ vào MongoDB Atlas
+  async submitApplication(data: any): Promise<any> {
+    const response = await fetch(`${BASE_URL}/applications`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
     });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Submit failed');
+    }
+    return response.json();
   },
+
+  // Lấy danh sách hồ sơ từ MongoDB Atlas
+  async getApplications(userId: string): Promise<any[]> {
+    const response = await fetch(`${BASE_URL}/applications/${userId}`);
+    if (!response.ok) throw new Error('Fetch failed');
+    return response.json();
+  }
 };
 
 export { MOCK_UNIVERSITIES };

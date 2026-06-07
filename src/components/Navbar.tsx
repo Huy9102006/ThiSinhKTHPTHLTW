@@ -1,34 +1,26 @@
 import React from 'react';
-import { Layout, Menu, Button, Avatar, Dropdown, Space, Tag } from 'antd';
+import { Layout, Menu, Avatar, Dropdown, Space, Tag } from 'antd';
 import {
   HomeOutlined,
   FileTextOutlined,
   SearchOutlined,
   UserOutlined,
-  LogoutOutlined,
   BellOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { logout } from '../store/authSlice';
 
 const { Header } = Layout;
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
-  const { user, isAuthenticated } = useSelector((s: RootState) => s.auth);
+  const { user } = useSelector((s: RootState) => s.auth);
   const applications = useSelector((s: RootState) => s.application.applications);
 
   const userApplications = applications.filter((a) => a.userId === user?.id);
   const pendingCount = userApplications.filter((a) => a.status === 'pending').length;
-
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate('/login');
-  };
 
   const menuItems = [
     { key: '/dashboard', icon: <HomeOutlined />, label: 'Trang chủ' },
@@ -44,14 +36,6 @@ const Navbar: React.FC = () => {
         icon: <UserOutlined />,
         label: 'Thông tin cá nhân',
         onClick: () => navigate('/dashboard'),
-      },
-      { type: 'divider' as const },
-      {
-        key: 'logout',
-        icon: <LogoutOutlined />,
-        label: 'Đăng xuất',
-        danger: true,
-        onClick: handleLogout,
       },
     ],
   };
@@ -95,49 +79,35 @@ const Navbar: React.FC = () => {
         </span>
       </div>
 
-      {isAuthenticated && (
-        <Menu
-          mode="horizontal"
-          selectedKeys={[location.pathname]}
-          items={menuItems}
-          onClick={({ key }) => navigate(key)}
-          style={{
-            background: 'transparent',
-            borderBottom: 'none',
-            color: '#fff',
-            flex: 1,
-            justifyContent: 'center',
-          }}
-          theme="dark"
-        />
-      )}
+      <Menu
+        mode="horizontal"
+        selectedKeys={[location.pathname]}
+        items={menuItems}
+        onClick={({ key }) => navigate(key)}
+        style={{
+          background: 'transparent',
+          borderBottom: 'none',
+          color: '#fff',
+          flex: 1,
+          justifyContent: 'center',
+        }}
+        theme="dark"
+      />
 
       <div>
-        {isAuthenticated ? (
-          <Space>
-            {pendingCount > 0 && (
-              <Tag color="orange" style={{ cursor: 'pointer' }} onClick={() => navigate('/status')}>
-                {pendingCount} hồ sơ chờ duyệt
-              </Tag>
-            )}
-            <Dropdown menu={userMenu} placement="bottomRight">
-              <Space style={{ cursor: 'pointer', color: '#fff' }}>
-                <Avatar style={{ background: '#faad14', color: '#003087' }} icon={<UserOutlined />} />
-                <span style={{ color: '#fff', fontWeight: 500 }}>{user?.fullName}</span>
-              </Space>
-            </Dropdown>
-          </Space>
-        ) : (
-          <Space>
-            <Button ghost onClick={() => navigate('/login')}>
-              Đăng nhập
-            </Button>
-            <Button type="primary" onClick={() => navigate('/register')}
-              style={{ background: '#faad14', borderColor: '#faad14', color: '#003087' }}>
-              Đăng ký
-            </Button>
-          </Space>
-        )}
+        <Space>
+          {pendingCount > 0 && (
+            <Tag color="orange" style={{ cursor: 'pointer' }} onClick={() => navigate('/status')}>
+              {pendingCount} hồ sơ chờ duyệt
+            </Tag>
+          )}
+          <Dropdown menu={userMenu} placement="bottomRight">
+            <Space style={{ cursor: 'pointer', color: '#fff' }}>
+              <Avatar style={{ background: '#faad14', color: '#003087' }} icon={<UserOutlined />} />
+              <span style={{ color: '#fff', fontWeight: 500 }}>{user?.fullName}</span>
+            </Space>
+          </Dropdown>
+        </Space>
       </div>
     </Header>
   );

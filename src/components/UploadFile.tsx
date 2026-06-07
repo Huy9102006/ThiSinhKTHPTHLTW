@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, Button, List, Tag, Typography, message, Space } from 'antd';
+import { Upload, Button, List, Tag, Typography, message, Space, Spin } from 'antd';
 import {
   UploadOutlined,
   FilePdfOutlined,
@@ -7,6 +7,7 @@ import {
   DeleteOutlined,
   EyeOutlined,
 } from '@ant-design/icons';
+import { api } from '../services/api';
 
 const { Text } = Typography;
 
@@ -14,7 +15,8 @@ interface UploadedFile {
   name: string;
   url: string;
   type: string;
-  size: number;
+  size?: number;
+  fileId?: string; // ID từ MongoDB
 }
 
 interface Props {
@@ -31,8 +33,9 @@ const UploadFile: React.FC<Props> = ({
   label = 'Tải lên tài liệu',
 }) => {
   const [files, setFiles] = useState<UploadedFile[]>(value);
+  const [uploading, setUploading] = useState(false);
 
-  const handleUpload = (file: File) => {
+  const handleUpload = async (file: File) => {
     if (!['application/pdf', 'image/jpeg', 'image/png'].includes(file.type)) {
       message.error('Chỉ chấp nhận file PDF, JPG, PNG!');
       return false;
@@ -46,21 +49,29 @@ const UploadFile: React.FC<Props> = ({
       return false;
     }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
+    setUploading(true);
+    try {
+      // Gọi API để upload lên MongoDB
+      const result = await api.uploadFile(file);
+
       const newFile: UploadedFile = {
-        name: file.name,
-        url: e.target?.result as string,
-        type: file.type,
-        size: file.size,
+        name: result.name,
+        url: result.url,
+        type: result.type,
+        fileId: result.id,
       };
+
       const updated = [...files, newFile];
       setFiles(updated);
       onChange?.(updated);
-      message.success(`${file.name} đã được tải lên!`);
-    };
-    reader.readAsDataURL(file);
-    return false;
+    } catch (error) {
+      message.error('Lỗi khi upload file!');
+      console.error(error);
+    } finally {
+      setUploading(false);
+    }
+
+    return false; // Ngăn Ant Design tự động upload
   };
 
   const handleRemove = (index: number) => {
@@ -70,16 +81,7 @@ const UploadFile: React.FC<Props> = ({
   };
 
   const handlePreview = (file: UploadedFile) => {
-    const win = window.open();
-    if (win) {
-      if (file.type === 'application/pdf') {
-        win.document.write(
-          `<iframe src="${file.url}" width="100%" height="100%" style="border:none"></iframe>`
-        );
-      } else {
-        win.document.write(`<img src="${file.url}" style="max-width:100%" />`);
-      }
-    }
+    window.open(file.url, '_blank');
   };
 
   return (
@@ -88,14 +90,17 @@ const UploadFile: React.FC<Props> = ({
         accept=".pdf,.jpg,.jpeg,.png"
         showUploadList={false}
         beforeUpload={handleUpload}
-        multiple
+        multiple={false}
       >
-        <Button icon={<UploadOutlined />} disabled={files.length >= maxCount}>
-          {label} ({files.length}/{maxCount})
+        <Button
+          icon={uploading ? <Spin size="small" /> : <UploadOutlined />}
+          disabled={files.length >= maxCount || uploading}
+        >
+          {uploading ? 'Đang tải lên...' : `${label} (${files.length}/${maxCount})`}
         </Button>
       </Upload>
       <Text type="secondary" style={{ display: 'block', marginTop: 4, fontSize: 12 }}>
-        Chấp nhận: PDF, JPG, PNG • Tối đa 5MB/file
+        File sẽ được lưu trữ trên MongoDB Atlas • Tối đa 5MB/file
       </Text>
 
       {files.length > 0 && (
@@ -142,10 +147,6 @@ const UploadFile: React.FC<Props> = ({
                 )}
                 <div>
                   <Text style={{ fontSize: 13 }}>{file.name}</Text>
-                  <br />
-                  <Text type="secondary" style={{ fontSize: 11 }}>
-                    {(file.size / 1024).toFixed(1)} KB
-                  </Text>
                 </div>
                 <Tag color={file.type === 'application/pdf' ? 'red' : 'blue'}>
                   {file.type === 'application/pdf' ? 'PDF' : 'Ảnh'}

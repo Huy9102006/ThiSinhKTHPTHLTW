@@ -8,9 +8,10 @@ import {
   EyeOutlined, FileTextOutlined, ClockCircleOutlined,
   CheckCircleOutlined, CloseCircleOutlined, FilterOutlined,
 } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
-import type { Application, AppStatus } from '../store/applicationSlice';
+import { setApplications, Application, AppStatus } from '../store/applicationSlice';
+import { api } from '../services/api';
 import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
@@ -22,13 +23,24 @@ const STATUS_CONFIG: Record<AppStatus, { color: string; label: string; badgeStat
 };
 
 const ApplicationStatus: React.FC = () => {
+  const dispatch = useDispatch();
   const { user } = useSelector((s: RootState) => s.auth);
   const applications = useSelector((s: RootState) => s.application.applications);
   const userApps = applications.filter((a) => a.userId === user?.id);
 
+  const [loading, setLoading] = React.useState(false);
   const [filterStatus, setFilterStatus] = useState<AppStatus | 'all'>('all');
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [detailVisible, setDetailVisible] = useState(false);
+
+  React.useEffect(() => {
+    if (user?.id) {
+      setLoading(true);
+      api.getApplications(user.id)
+        .then(apps => dispatch(setApplications(apps)))
+        .finally(() => setLoading(false));
+    }
+  }, [user?.id, dispatch]);
 
   const filtered = filterStatus === 'all'
     ? userApps
@@ -152,7 +164,8 @@ const ApplicationStatus: React.FC = () => {
           <Table
             dataSource={filtered}
             columns={columns}
-            rowKey="id"
+            rowKey={(record) => record._id || record.id}
+            loading={loading}
             pagination={{ pageSize: 8, showSizeChanger: false }}
             scroll={{ x: 700 }}
             rowClassName={(r) =>

@@ -133,7 +133,6 @@ const ApplicationForm: React.FC = () => {
       }));
 
       const application = {
-        id: 'app_' + Date.now(),
         userId: user!.id,
         universityId: allValues.universityId,
         universityName: university?.name || '',
@@ -153,9 +152,15 @@ const ApplicationForm: React.FC = () => {
         submittedAt: new Date().toISOString(),
       };
 
-      dispatch(addApplication(application));
+      // Lưu vào MongoDB Atlas qua Backend
+      const savedApp = await api.submitApplication(application);
+
+      dispatch(addApplication(savedApp));
       setSubmitted(true);
-      message.success('Nộp hồ sơ thành công! Hệ thống sẽ xem xét hồ sơ của bạn.');
+      message.success('Nộp hồ sơ thành công! Hồ sơ đã được lưu trên MongoDB Atlas.');
+    } catch (error: any) {
+      message.error(error.message || 'Lỗi khi gửi hồ sơ!');
+      console.error(error);
     } finally {
       setSubmitting(false);
     }

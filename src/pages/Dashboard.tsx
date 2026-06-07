@@ -9,9 +9,10 @@ import {
   TrophyOutlined, UserOutlined, BellOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
-import type { Application } from '../store/applicationSlice';
+import { setApplications, Application } from '../store/applicationSlice';
+import { api } from '../services/api';
 import dayjs from 'dayjs';
 
 const { Title, Text, Paragraph } = Typography;
@@ -24,9 +25,16 @@ const statusConfig: Record<Application['status'], { color: string; label: string
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useSelector((s: RootState) => s.auth);
   const applications = useSelector((s: RootState) => s.application.applications);
   const userApps = applications.filter((a) => a.userId === user?.id);
+
+  React.useEffect(() => {
+    if (user?.id) {
+      api.getApplications(user.id).then(apps => dispatch(setApplications(apps)));
+    }
+  }, [user?.id, dispatch]);
 
   const stats = {
     total: userApps.length,
