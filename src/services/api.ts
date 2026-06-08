@@ -36,6 +36,41 @@ export const api = {
     });
   },
 
+  // Đăng nhập
+  async login(email: string, password: string): Promise<{ user: any; token: string }> {
+    const response = await fetch(`${BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || err.error || 'Đăng nhập thất bại!');
+    }
+    return response.json();
+  },
+
+  // Đăng ký
+  async register(data: {
+    fullName: string;
+    email: string;
+    password: string;
+    phone: string;
+    dob: string;
+    idCard: string;
+  }): Promise<{ user: any; token: string }> {
+    const response = await fetch(`${BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || err.error || 'Đăng ký thất bại!');
+    }
+    return response.json();
+  },
+
   // Upload file lên MongoDB Atlas qua Backend
   async uploadFile(file: File): Promise<any> {
     const formData = new FormData();
@@ -67,7 +102,7 @@ export const api = {
     const response = await fetch(`${BASE_URL}/applications/${userId}`);
     if (!response.ok) throw new Error('Fetch failed');
     return response.json();
-  }
+  },
 };
 
 export { MOCK_UNIVERSITIES };

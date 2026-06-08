@@ -6,16 +6,19 @@ import {
   SearchOutlined,
   UserOutlined,
   BellOutlined,
+  LogoutOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
+import { logout } from '../store/authSlice';
 
 const { Header } = Layout;
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const { user } = useSelector((s: RootState) => s.auth);
   const applications = useSelector((s: RootState) => s.application.applications);
 
@@ -29,6 +32,11 @@ const Navbar: React.FC = () => {
     { key: '/result', icon: <SearchOutlined />, label: 'Tra cứu kết quả' },
   ];
 
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
+  };
+
   const userMenu = {
     items: [
       {
@@ -36,6 +44,14 @@ const Navbar: React.FC = () => {
         icon: <UserOutlined />,
         label: 'Thông tin cá nhân',
         onClick: () => navigate('/dashboard'),
+      },
+      { type: 'divider' as const },
+      {
+        key: 'logout',
+        icon: <LogoutOutlined />,
+        label: 'Đăng xuất',
+        danger: true,
+        onClick: handleLogout,
       },
     ],
   };
@@ -60,16 +76,9 @@ const Navbar: React.FC = () => {
       >
         <div
           style={{
-            width: 36,
-            height: 36,
-            background: '#faad14',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 'bold',
-            color: '#003087',
-            fontSize: 16,
+            width: 36, height: 36, background: '#faad14', borderRadius: '50%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontWeight: 'bold', color: '#003087', fontSize: 16,
           }}
         >
           TS
@@ -85,11 +94,8 @@ const Navbar: React.FC = () => {
         items={menuItems}
         onClick={({ key }) => navigate(key)}
         style={{
-          background: 'transparent',
-          borderBottom: 'none',
-          color: '#fff',
-          flex: 1,
-          justifyContent: 'center',
+          background: 'transparent', borderBottom: 'none', color: '#fff',
+          flex: 1, justifyContent: 'center',
         }}
         theme="dark"
       />

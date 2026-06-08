@@ -15,20 +15,14 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
-// Default user for public access
-const defaultUser: User = {
-  id: 'guest_user',
-  email: 'thi_sinh@example.com',
-  fullName: 'Thí sinh khách',
-  phone: '0987654321',
-  dob: '2005-01-01',
-  idCard: '001205001234',
-};
+// Try to restore session from localStorage
+const savedToken = localStorage.getItem('ts_token');
+const savedUser = localStorage.getItem('ts_user');
 
 const initial: AuthState = {
-  user: defaultUser,
-  token: 'guest_token',
-  isAuthenticated: true,
+  user: savedUser ? JSON.parse(savedUser) : null,
+  token: savedToken || null,
+  isAuthenticated: !!savedToken,
 };
 
 const authSlice = createSlice({
@@ -41,7 +35,11 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
     },
     logout(state) {
-      // Logic for logout if needed, but we probably don't need it now
+      state.user = null;
+      state.token = null;
+      state.isAuthenticated = false;
+      localStorage.removeItem('ts_token');
+      localStorage.removeItem('ts_user');
     },
     updateUser(state, action: PayloadAction<Partial<User>>) {
       if (state.user) {
