@@ -29,6 +29,11 @@ const Register: React.FC = () => {
       };
       const result = await api.register(payload);
       dispatch(login({ user: result.user, token: result.token }));
+
+      // Lưu vào localStorage để duy trì đăng nhập
+      localStorage.setItem('ts_token', result.token);
+      localStorage.setItem('ts_user', JSON.stringify(result.user));
+
       message.success('Đăng ký thành công! Chào mừng bạn.');
       navigate('/dashboard');
     } catch (err: any) {

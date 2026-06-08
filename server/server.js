@@ -22,6 +22,19 @@ const FileModel = mongoose.models.File || mongoose.model('File', new mongoose.Sc
   uploadDate: { type: Date, default: Date.now }
 }));
 
+// Schema cho người dùng
+const userSchema = new mongoose.Schema({
+  fullName: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true }, // Trong thực tế nên hash mật khẩu
+  phone: String,
+  dob: String,
+  idCard: String,
+  createdAt: { type: Date, default: Date.now }
+});
+
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+
 // Schema cho hồ sơ ứng tuyển - Sử dụng Mixed để tránh lỗi CastError
 const applicationSchema = new mongoose.Schema({
   userId: String,
@@ -48,6 +61,63 @@ const applicationSchema = new mongoose.Schema({
 const Application = mongoose.models.Application || mongoose.model('Application', applicationSchema);
 
 const upload = multer({ storage: multer.memoryStorage() });
+
+// Routes cho Authentication
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { email, password, fullName, phone, dob, idCard } = req.body;
+
+    // Kiểm tra email đã tồn tại
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email đã được sử dụng!' });
+    }
+
+    const user = new User({ email, password, fullName, phone, dob, idCard });
+    await user.save();
+
+    res.status(201).json({
+      user: {
+        id: user._id,
+        email: user.email,
+        fullName: user.fullName,
+        phone: user.phone,
+        dob: user.dob,
+        idCard: user.idCard
+      },
+      token: 'fake-jwt-token-' + user._id // Giả lập token
+    });
+  } catch (error) {
+    console.error('Register Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email, password });
+
+    if (!user) {
+      return res.status(401).json({ error: 'Email hoặc mật khẩu không đúng!' });
+    }
+
+    res.json({
+      user: {
+        id: user._id,
+        email: user.email,
+        fullName: user.fullName,
+        phone: user.phone,
+        dob: user.dob,
+        idCard: user.idCard
+      },
+      token: 'fake-jwt-token-' + user._id
+    });
+  } catch (error) {
+    console.error('Login Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
