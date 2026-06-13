@@ -4,8 +4,20 @@ const cors = require('cors');
 const multer = require('multer');
 
 const app = express();
-app.use(cors());
+
+// CORS Configuration
+app.use(cors({
+  origin: true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+app.options('*', cors());
+
+// Body parsing (chỉ 1 lần)
 app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://DATA:741852%40A@cluster0.nytsgyz.mongodb.net/admission_system?retryWrites=true&w=majority&authSource=admin';
 
@@ -26,7 +38,7 @@ const FileModel = mongoose.models.File || mongoose.model('File', new mongoose.Sc
 const userSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }, // Trong thực tế nên hash mật khẩu
+  password: { type: String, required: true },
   phone: String,
   dob: String,
   idCard: String,
@@ -35,7 +47,7 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
-// Schema cho hồ sơ ứng tuyển - Sử dụng Mixed để tránh lỗi CastError
+// Schema cho hồ sơ ứng tuyển
 const applicationSchema = new mongoose.Schema({
   userId: String,
   fullName: String,
@@ -62,12 +74,18 @@ const Application = mongoose.models.Application || mongoose.model('Application',
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Routes cho Authentication
+// ============ ROUTES ============
+
+// Test route (thêm vào để kiểm tra CORS)
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'CORS is working! Backend is online.' });
+});
+
+// Authentication Routes
 app.post('/api/auth/register', async (req, res) => {
   try {
     const { email, password, fullName, phone, dob, idCard } = req.body;
 
-    // Kiểm tra email đã tồn tại
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: 'Email đã được sử dụng!' });
@@ -85,7 +103,7 @@ app.post('/api/auth/register', async (req, res) => {
         dob: user.dob,
         idCard: user.idCard
       },
-      token: 'fake-jwt-token-' + user._id // Giả lập token
+      token: 'fake-jwt-token-' + user._id
     });
   } catch (error) {
     console.error('Register Error:', error);
@@ -119,9 +137,10 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// Upload Routes
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
-    if (!req.file) return res.status(400).send('No file uploaded.');
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded.' });
 
     const newFile = new FileModel({
       name: req.file.originalname,
@@ -132,11 +151,14 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 
     const savedFile = await newFile.save();
 
+    // FIX: Dùng relative path hoặc dựa vào req protocol/host
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    
     res.json({
       id: savedFile._id,
       name: savedFile.name,
       type: savedFile.contentType,
-      url: `http://localhost:5000/api/files/${savedFile._id}`
+      url: `${baseUrl}/api/files/${savedFile._id}`
     });
   } catch (error) {
     console.error('Upload Error:', error);
@@ -156,6 +178,7 @@ app.get('/api/files/:id', async (req, res) => {
   }
 });
 
+// Applications Routes
 app.post('/api/applications', async (req, res) => {
   try {
     console.log('Body received:', JSON.stringify(req.body, null, 2));
