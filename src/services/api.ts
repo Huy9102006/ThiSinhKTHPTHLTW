@@ -22,7 +22,7 @@ export interface SubjectGroup {
 
 const MOCK_UNIVERSITIES: University[] = universityData as University[];
 
-const BASE_URL = 'http://localhost:5000/api';
+const BASE_URL = 'https://tuyensinh-backend.up.railway.app';
 
 export const api = {
   async getUniversities(): Promise<University[]> {

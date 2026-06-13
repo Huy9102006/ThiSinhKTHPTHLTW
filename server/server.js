@@ -7,11 +7,11 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
-const mongoURI = 'mongodb+srv://DATA:741852%40A@cluster0.nytsgyz.mongodb.net/admission_system?retryWrites=true&w=majority&authSource=admin';
+const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://DATA:741852%40A@cluster0.nytsgyz.mongodb.net/admission_system?retryWrites=true&w=majority&authSource=admin';
 
 mongoose.connect(mongoURI)
-  .then(() => console.log('MongoDB Atlas Connected'))
-  .catch(err => console.error('MongoDB Connection Error:', err));
+  .then(() => console.log('✅ MongoDB Atlas Connected'))
+  .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 // Schema cho file (ảnh/pdf)
 const FileModel = mongoose.models.File || mongoose.model('File', new mongoose.Schema({
@@ -182,7 +182,7 @@ app.get('/api/applications/:userId', async (req, res) => {
   }
 });
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
